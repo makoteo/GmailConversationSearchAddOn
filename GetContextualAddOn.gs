@@ -1,6 +1,6 @@
 var globalEvent;
 
-var sender = ""; //This wil be set to the previous senders name
+var sender = ""; //This will be set to the previous senders name
 var senderEmail = ""; //This is the previous senders email
 
 var currentSender = ""; //Current senders name
