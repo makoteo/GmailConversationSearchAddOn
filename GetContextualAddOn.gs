@@ -6,7 +6,21 @@ var senderEmail = ""; //This is the previous senders email
 var currentSender = ""; //Current senders name
 var currentEmail = ""; //Current senders email
 
-var ss = SpreadsheetApp.openById("1CkXdLWZlPR5Ac0QSwB9kfDeq1zbOsQzmKn__QCqgIb4"); //Link to spreadsheet (the thing in the URL)
+var userProperties = PropertiesService.getUserProperties(); //This is used to save values - userProperties.setProperty(key, value);
+//userProperties.deleteAllProperties(); - Deletes all properties
+
+var ss; //SpreadSheet, defined below
+
+if(userProperties.getProperty('SPREADSHEETID') !== null){ //If there's a userProperty with the key SPREADSHEETID
+  var ssId = userProperties.getProperty('SPREADSHEETID'); //Returns the value of the userProperty
+  ss = SpreadsheetApp.openById(ssId); //Opens the spreadsheet
+}else{
+  ss = SpreadsheetApp.create("GmailAddOnTemp"); //Creates new Spreadsheet with this name
+  var ssId = ss.getId(); //Gets the id of the spreadsheet (it's the thing in the url)
+  var newProperties = {SPREADSHEETID: ssId} // Creates the property SPREADSHEETID with a value of ssID (key: value)
+  userProperties.setProperties(newProperties); // Places the property in userProperties
+}
+
 var sheet = ss.getSheets()[0]; //Returns the first sheet
 var data = sheet.getDataRange().getValues(); 
 //The previous line gets values of sheet as array (Be careful about this, the order is [y, x] instead of [x, y], and if you search for a cell that doesn't exist, it throws an error)
@@ -19,7 +33,7 @@ function getContextualAddOn(event) { //Called when the button is pressed
   globalEvent = event;
   
   if(data[0][0] === ""){ //Checks if the spreadsheet file is empty, if yes, it resets the value
-    resetInfo(); //Sets the sender and his email to the current sender and email
+    resetInfo(event); //Sets the sender and his email to the current sender and email
   }else{
     sender = data[0][0]; //Sets the previous sender to what was saved in spreadsheet file
     senderEmail = data[0][1]; //Same with email (here you can see the [y, x] since the sender and sender email are next to each other in the spreadsheet)
